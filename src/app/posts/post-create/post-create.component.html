@@ -1,31 +1,31 @@
 <mat-card>
   <mat-spinner *ngIf="isLoading"></mat-spinner>
-  <form (submit)="onSavePost(postForm)" #postForm="ngForm" *ngIf="!isLoading">
+  <form [formGroup]="form" (submit)="onSavePost()" *ngIf="!isLoading">
     <mat-form-field hintLabel="Minimum 3 characters">
       <input
         matInput
-        [ngModel]="post?.title"
-        #title="ngModel"
-        name="title"
+        formControlName="title"
         placeholder="Post Title"
-        type="text"
-        required
-        minlength="3">
-      <mat-hint align="end">{{title.value?.length || 0}}/3</mat-hint>
-      <mat-error *ngIf="title.invalid">Please enter the post's title (Minimum 3 characters)</mat-error>
+        type="text">
+      <mat-hint align="end">{{form.get('title').value?.length || 0}}/3</mat-hint>
+      <mat-error *ngIf="form.get('title').invalid">Please enter the post's title (Minimum 3 characters)</mat-error>
     </mat-form-field>
+    <div>
+      <button mat-stroked-button type="button" class="pick-image-button" (click)="filePicker.click()">Pick Image</button>
+      <input type="file" (change)="onImagePicked($event)" #filePicker>
+    </div>
+    <div class="image-preview" *ngIf="imagePreview && imagePreview !== '' && form.get('image').valid">
+      <img [src]="imagePreview" [alt]="form.value.title">
+    </div>
     <mat-form-field>
       <textarea
         matInput
-        [ngModel]="post?.content"
-        #content="ngModel"
-        name="content"
+        formControlName="content"
         placeholder="Post Content"
-        rows="3"
-        required>
+        rows="3">
       </textarea>
-      <mat-error *ngIf="content.invalid">Please enter the post's content</mat-error>
+      <mat-error *ngIf="form.get('content').invalid">Please enter the post's content</mat-error>
     </mat-form-field>
-    <button mat-raised-button color="primary" type="submit" [disabled]="!postForm.valid">Save Post</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">Save Post</button>
   </form>
 </mat-card>
