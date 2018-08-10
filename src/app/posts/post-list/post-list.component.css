@@ -7,6 +7,10 @@ mat-spinner {
   margin: auto;
 }
 
+mat-paginator {
+  margin-top: 16px;
+}
+
 .info-text {
   text-align: center;
 }
