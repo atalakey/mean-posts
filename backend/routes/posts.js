@@ -41,7 +41,7 @@ router.get('', (req, res, next) => {
     return Post.count();
   }).then(count => {
     res.status(200).json({
-      message: 'Posts fetched sucessfully!',
+      message: 'Posts fetched sucessfully',
       postCount: count,
       posts: posts
     });
@@ -52,7 +52,7 @@ router.get('/:id', (req, res, next) => {
   Post.findById(req.params.id).then(result => {
     if (result) {
       res.status(200).json({
-        message: 'Post fetched sucessfully!',
+        message: 'Post fetched sucessfully',
         post: result
       });
     } else {
@@ -72,7 +72,8 @@ router.post(
     const post = new Post({
       title: req.body.title,
       content: req.body.content,
-      imagePath: url + '/images/' + req.file.filename
+      imagePath: url + '/images/' + req.file.filename,
+      creator: req.userData.userId
     });
     post.save().then(result => {
       console.log(JSON.stringify(result, undefined, 2));
@@ -99,24 +100,39 @@ router.put(
       _id: req.body.id,
       title: req.body.title,
       content: req.body.content,
-      imagePath: imagePath
+      imagePath: imagePath,
+      creator: req.userData.userId
     });
-    Post.updateOne({ _id: req.params.id }, post).then(result => {
-      console.log(JSON.stringify(result, undefined, 2));
-      res.status(200).json({
-        message: 'Post updated sucessfully'
+    Post.updateOne({ _id: req.params.id, creator: req.userData.userId }, post)
+      .then(result => {
+        console.log(JSON.stringify(result, undefined, 2));
+        if (result.n != 0) {
+          res.status(200).json({
+            message: 'Post updated sucessfully'
+          });
+        } else {
+          res.status(401).json({
+            message: 'Not authorized!'
+          });
+        }
       });
-    });
   }
 );
 
 router.delete('/:id', checkAuth, (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id }).then(result => {
-    console.log(JSON.stringify(result, undefined, 2));
-    res.status(201).json({
-      message: 'Post deleted sucessfully!'
+  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId })
+    .then(result => {
+      console.log(JSON.stringify(result, undefined, 2));
+      if (result.n != 0) {
+        res.status(200).json({
+          message: 'Post deleted sucessfully'
+        });
+      } else {
+        res.status(401).json({
+          message: 'Not authorized!'
+        });
+      }
     });
-  });
 });
 
 module.exports = router;

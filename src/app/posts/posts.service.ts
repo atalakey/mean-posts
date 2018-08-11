@@ -21,7 +21,7 @@ export class PostsService {
 
   getPosts(postsPerPage: number, currentPage: number) {
     const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
-    this.http.get<{ message: string, postCount: number, posts: { _id: string, title: string, content: string, imagePath: string }[] }>('http://localhost:3000/api/posts' + queryParams)
+    this.http.get<{ message: string, postCount: number, posts: { _id: string, title: string, content: string, imagePath: string, creator: string }[] }>('http://localhost:3000/api/posts' + queryParams)
       .pipe(map((res) => {
         console.log(res.message);
         return {
@@ -30,7 +30,8 @@ export class PostsService {
               id: post._id,
               title: post.title,
               content: post.content,
-              imagePath: post.imagePath
+              imagePath: post.imagePath,
+              creator: post.creator
             };
           }),
           postCount: res.postCount
@@ -42,8 +43,8 @@ export class PostsService {
       });
   }
 
-  getPost(postId: string): Observable<{ message: string, post?: { _id: string, title: string, content: string, imagePath: string } }> {
-    return this.http.get<{ message: string, post?: { _id: string, title: string, content: string, imagePath: string } }>('http://localhost:3000/api/posts/' + postId);
+  getPost(postId: string): Observable<{ message: string, post?: { _id: string, title: string, content: string, imagePath: string, creator: string } }> {
+    return this.http.get<{ message: string, post?: { _id: string, title: string, content: string, imagePath: string, creator: string } }>('http://localhost:3000/api/posts/' + postId);
   }
 
   addPost(title: string, content: string, image: File) {
@@ -67,7 +68,7 @@ export class PostsService {
       postData.append('content', content);
       postData.append('image', image, title);
     } else {
-      postData = { id: postId, title: title, content: content, imagePath: image };
+      postData = { id: postId, title: title, content: content, imagePath: image, creator: null };
     }
     this.http.put<{ message: string, imagePath: string }>('http://localhost:3000/api/posts/' + postId, postData)
       .subscribe((res) => {

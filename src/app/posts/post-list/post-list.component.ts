@@ -14,13 +14,14 @@ import { Post } from '../post.model';
 export class PostListComponent implements OnInit, OnDestroy {
   isLoading = false;
   isAuthenticated = false;
-  private authListenerSubscription: Subscription;
+  userId: string;
   posts: Post[] = [];
-  private postsSubscription: Subscription;
   totalPosts = 0;
   postsPerPage = 2;
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
+  private authListenerSubscription: Subscription;
+  private postsSubscription: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -30,10 +31,12 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     this.isAuthenticated = this.authService.getIsAuthenticated();
+    this.userId = this.authService.getUserId();
     this.authListenerSubscription = this.authService
       .getAuthStatusListener()
       .subscribe(isAuthenticated => {
         this.isAuthenticated = isAuthenticated;
+        this.userId = this.authService.getUserId();
       });
 
     this.postsService.getPosts(this.postsPerPage, this.currentPage);

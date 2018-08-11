@@ -14,18 +14,25 @@ router.post('/signup', (req, res, next) => {
         password: hash
       });
       user.save()
-        .then(result => {
-          console.log(JSON.stringify(result, undefined, 2));
+        .then(user => {
+          console.log(JSON.stringify(user, undefined, 2));
+          const token = jwt.sign(
+            { email: user.email, userId: user._id },
+            'secret_this_should_be_longer',
+            { expiresIn: '1h' }
+          );
           res.status(201).json({
             message: 'User created sucessfully',
-            result: result
+            token: token,
+            expiresIn: 3600,
+            userId: user._id
           });
         })
         .catch(err => {
           res.status(500).json({
-            error: err
+            message: err
           });
-        })
+        });
     });
 });
 
@@ -35,7 +42,7 @@ router.post('/login', (req, res, next) => {
     .then(user => {
       if (!user) {
         return res.status(401).json({
-          message: 'Authentication failed'
+          message: 'Authentication failed!'
         });
       }
       fetchedUser = user;
@@ -44,7 +51,7 @@ router.post('/login', (req, res, next) => {
     .then(result => {
       if (!result) {
         return res.status(401).json({
-          message: 'Authentication failed'
+          message: 'Authentication failed!'
         });
       }
       const token = jwt.sign(
@@ -55,12 +62,13 @@ router.post('/login', (req, res, next) => {
       return res.status(200).json({
         message: 'User authenticated',
         token: token,
-        expiresIn: 3600
+        expiresIn: 3600,
+        userId: fetchedUser._id
       });
     })
     .catch(err => {
       return res.status(401).json({
-        message: 'Authentication failed'
+        message: 'Authentication failed!'
       });
     })
 });
