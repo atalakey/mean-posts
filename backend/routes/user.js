@@ -32,7 +32,9 @@ router.post('/signup', (req, res, next) => {
           });
         })
         .catch(error => {
-          res.status(500).json({ message: error });
+          res.status(500).json({
+            message: 'Email already registered!'
+          });
         });
     });
 });
@@ -43,7 +45,9 @@ router.post('/login', (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then(user => {
       if (!user) {
-        return res.status(401).json({ message: 'Authentication failed!' });
+        return res.status(401).json({
+          message: 'Invalid authentication credentials!'
+        });
       }
 
       fetchedUser = user;
@@ -51,7 +55,9 @@ router.post('/login', (req, res, next) => {
     })
     .then(result => {
       if (!result) {
-        return res.status(401).json({ message: 'Authentication failed!' });
+        return res.status(401).json({
+          message: 'Invalid authentication credentials!'
+        });
       }
 
       const token = jwt.sign(
@@ -60,7 +66,7 @@ router.post('/login', (req, res, next) => {
         { expiresIn: '1h' }
       );
 
-      return res.status(200).json({
+      res.status(200).json({
         message: 'User authenticated',
         token: token,
         expiresIn: 3600,
@@ -68,7 +74,9 @@ router.post('/login', (req, res, next) => {
       });
     })
     .catch(error => {
-      return res.status(500).json({ message: error });
+      res.status(500).json({
+        message: 'Invalid authentication credentials!'
+      });
     });
 });
 

@@ -44,6 +44,11 @@ router.get('', (req, res, next) => {
       postCount: postCount,
       posts: fetchedPosts
     });
+  })
+  .catch(error => {
+    res.status(500).json({
+      message: 'Unable to fetch posts!'
+    });
   });
 });
 
@@ -58,6 +63,10 @@ router.get('/:id', (req, res, next) => {
       } else {
         res.status(404).json({ message: 'Post not found!' });
       }
+    }).catch(error => {
+      res.status(500).json({
+        message: 'Unable to fetch post!'
+      });
     });
 });
 
@@ -74,14 +83,20 @@ router.post(
       creator: req.userData.userId
     });
 
-    post.save().then(result => {
-      console.log(JSON.stringify(result, undefined, 2));
-      res.status(201).json({
-        message: 'Post added sucessfully',
-        postId: result._id,
-        imagePath: result.imagePath
+    post.save()
+      .then(result => {
+        console.log(JSON.stringify(result, undefined, 2));
+        res.status(201).json({
+          message: 'Post added sucessfully',
+          postId: result._id,
+          imagePath: result.imagePath
+        });
+      })
+      .catch(error => {
+        res.status(500).json({
+          message: 'Unable to create post!'
+        });
       });
-    });
   }
 );
 
@@ -110,8 +125,13 @@ router.put(
         if (result.n != 0) {
           res.status(200).json({ message: 'Post updated sucessfully' });
         } else {
-          res.status(401).json({ message: 'Not authorized!' });
+          res.status(401).json({ message: 'You are not authorized to update this post!' });
         }
+      })
+      .catch(error => {
+        res.status(500).json({
+          message: 'Unable to update post!'
+        });
       });
   }
 );
@@ -126,9 +146,13 @@ router.delete(
         if (result.n != 0) {
           res.status(200).json({ message: 'Post deleted sucessfully' });
         } else {
-          res.status(401).json({ message: 'Not authorized!' });
+          res.status(401).json({ message: 'You are not authorized to delete this post!' });
         }
-      });
+      }).catch(error => {
+        res.status(500).json({
+          message: 'Unable to delete post!'
+        });
+      });;
   }
 );
 

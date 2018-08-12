@@ -38,6 +38,8 @@ export class AuthService {
     this.http.post<{ message: string, token: string, expiresIn: number, userId: string }>('http://localhost:3000/api/user/signup', authData)
       .subscribe(response => {
         this.authenticateUser(response);
+      }, error => {
+        this.authStatusListener.next(this.isAuthenticated);
       });
   }
 
@@ -46,6 +48,8 @@ export class AuthService {
     this.http.post<{ message: string, token: string, expiresIn: number, userId: string }>('http://localhost:3000/api/user/login', authData)
       .subscribe(response => {
         this.authenticateUser(response);
+      }, error => {
+        this.authStatusListener.next(this.isAuthenticated);
       });
   }
 
