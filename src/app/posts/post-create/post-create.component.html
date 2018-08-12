@@ -2,11 +2,7 @@
   <mat-spinner *ngIf="isLoading"></mat-spinner>
   <form [formGroup]="form" (submit)="onSavePost()" *ngIf="!isLoading">
     <mat-form-field hintLabel="Minimum 3 characters">
-      <input
-        matInput
-        formControlName="title"
-        placeholder="Post Title"
-        type="text">
+      <input matInput formControlName="title" placeholder="Post Title" type="text">
       <mat-hint align="end">{{form.get('title').value?.length || 0}}/3</mat-hint>
       <mat-error *ngIf="form.get('title').invalid">Please enter the post's title (Minimum 3 characters)</mat-error>
     </mat-form-field>
@@ -18,11 +14,7 @@
       <img [src]="imagePreview" [alt]="form.value.title">
     </div>
     <mat-form-field>
-      <textarea
-        matInput
-        formControlName="content"
-        placeholder="Post Content"
-        rows="3">
+      <textarea matInput formControlName="content" placeholder="Post Content" rows="3">
       </textarea>
       <mat-error *ngIf="form.get('content').invalid">Please enter the post's content</mat-error>
     </mat-form-field>

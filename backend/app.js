@@ -10,10 +10,10 @@ const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mean-posts')
   .then(() => {
-    console.log('Connected to database');
+    console.log('Connected to database successfully');
   })
   .catch(() => {
-    console.log('Connection failed!');
+    console.log('Connection to database failed!');
   });
 
 app.use(bodyParser.json());

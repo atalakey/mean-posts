@@ -21,11 +21,14 @@ export class PostsService {
 
   getPosts(postsPerPage: number, currentPage: number) {
     const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
-    this.http.get<{ message: string, postCount: number, posts: { _id: string, title: string, content: string, imagePath: string, creator: string }[] }>('http://localhost:3000/api/posts' + queryParams)
-      .pipe(map((res) => {
-        console.log(res.message);
+
+    this.http.get
+      <{ message: string, postCount: number, posts: { _id: string, title: string, content: string, imagePath: string, creator: string }[] }>
+      ('http://localhost:3000/api/posts' + queryParams)
+      .pipe(map(response => {
+        console.log(response.message);
         return {
-          posts: res.posts.map(post => {
+          posts: response.posts.map(post => {
             return {
               id: post._id,
               title: post.title,
@@ -34,7 +37,7 @@ export class PostsService {
               creator: post.creator
             };
           }),
-          postCount: res.postCount
+          postCount: response.postCount
         };
       }))
       .subscribe((postData) => {
@@ -43,8 +46,10 @@ export class PostsService {
       });
   }
 
-  getPost(postId: string): Observable<{ message: string, post?: { _id: string, title: string, content: string, imagePath: string, creator: string } }> {
-    return this.http.get<{ message: string, post?: { _id: string, title: string, content: string, imagePath: string, creator: string } }>('http://localhost:3000/api/posts/' + postId);
+  getPost(postId: string): Observable<{ message: string, post: { _id: string, title: string, content: string, imagePath: string, creator: string } }> {
+    return this.http.get
+      <{ message: string, post: { _id: string, title: string, content: string, imagePath: string, creator: string } }>
+      ('http://localhost:3000/api/posts/' + postId);
   }
 
   addPost(title: string, content: string, image: File) {
@@ -53,26 +58,27 @@ export class PostsService {
     postData.append('content', content);
     postData.append('image', image, title);
     this.http.post<{ message: string, postId: string , imagePath: string }>('http://localhost:3000/api/posts', postData)
-      .subscribe((res) => {
-        console.log(res.message);
+      .subscribe(response => {
+        console.log(response.message);
         this.router.navigate(['/']);
       });
   }
 
   updatePost(postId: string, title: string, content: string, image: File | string) {
-    let postData: Post | FormData;
+    let post: Post | FormData;
     if (typeof(image) === 'object') {
-      postData = new FormData();
-      postData.append('id', postId);
-      postData.append('title', title);
-      postData.append('content', content);
-      postData.append('image', image, title);
+      post = new FormData();
+      post.append('id', postId);
+      post.append('title', title);
+      post.append('content', content);
+      post.append('image', image, title);
     } else {
-      postData = { id: postId, title: title, content: content, imagePath: image, creator: null };
+      post = { id: postId, title: title, content: content, imagePath: image, creator: null };
     }
-    this.http.put<{ message: string, imagePath: string }>('http://localhost:3000/api/posts/' + postId, postData)
-      .subscribe((res) => {
-        console.log(res.message);
+
+    this.http.put<{ message: string, imagePath: string }>('http://localhost:3000/api/posts/' + postId, post)
+      .subscribe(response => {
+        console.log(response.message);
         this.router.navigate(['/']);
       });
   }

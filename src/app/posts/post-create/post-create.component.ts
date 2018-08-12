@@ -12,12 +12,12 @@ import { mimeType } from './mime-type.validator';
   styleUrls: ['./post-create.component.css']
 })
 export class PostCreateComponent implements OnInit {
-  form: FormGroup;
   isLoading = false;
-  private mode = 'create';
-  private postId: string;
+  form: FormGroup;
   post: Post;
   imagePreview: string;
+  private mode = 'create';
+  private postId: string;
 
   constructor(private postsService: PostsService, private route: ActivatedRoute) {}
 
@@ -27,21 +27,22 @@ export class PostCreateComponent implements OnInit {
       content: new FormControl(null, { validators: [Validators.required] }),
       image: new FormControl(null, { validators: [Validators.required], asyncValidators: [mimeType] })
     });
+
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
+        this.isLoading = true;
         this.mode = 'edit';
         this.postId = paramMap.get('postId');
-        this.isLoading = true;
         this.postsService.getPost(this.postId)
-          .subscribe((res) => {
-            console.log(res.message);
+          .subscribe(response => {
+            console.log(response.message);
             this.isLoading = false;
             this.post = {
-              id: res.post._id,
-              title: res.post.title,
-              content: res.post.content,
-              imagePath: res.post.imagePath,
-              creator: res.post.creator
+              id: response.post._id,
+              title: response.post.title,
+              content: response.post.content,
+              imagePath: response.post.imagePath,
+              creator: response.post.creator
             };
             this.form.setValue({
               title: this.post.title,
@@ -62,9 +63,7 @@ export class PostCreateComponent implements OnInit {
     this.form.patchValue({ image: file });
     this.form.get('image').updateValueAndValidity();
     const reader = new FileReader();
-    reader.onload = () => {
-      this.imagePreview = reader.result;
-    };
+    reader.onload = () => { this.imagePreview = reader.result; };
     reader.readAsDataURL(file);
   }
 
