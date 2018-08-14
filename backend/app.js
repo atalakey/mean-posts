@@ -18,8 +18,11 @@ mongoose.connect('mongodb://localhost:27017/mean-posts')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use('/images', express.static(path.join('backend/images')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+// to host the Angular app from within the Node Express backend server
+// app.use('/', express.static(path.join(__dirname, 'angular')));
 
+// comment out when hosting the Angular app from within the Node Express backend server
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
@@ -35,5 +38,9 @@ app.use((req, res, next) => {
 
 app.use('/api/user', userRoutes);
 app.use('/api/posts', postsRoutes);
+// to host the Angular app from within the Node Express backend server
+// app.use((req, res, next) => {
+//   res.sendFile(path.join(__dirname, 'angular', 'index.html'));
+// });
 
 module.exports = app;
