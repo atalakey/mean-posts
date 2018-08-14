@@ -57,7 +57,15 @@ You must have @angular/cli, NodeJS and Mongo DB installed.
 
     cd ~/Desktop/mean-posts
 
-2. Install App dependencies:
+3. Install App dependencies:
+
+    npm install
+
+4. Navigate to where you cloned the project and into the backend directory:
+
+    cd ~/Desktop/mean-posts/backend
+
+5. Install App dependencies:
 
     npm install
 ```
@@ -75,7 +83,7 @@ ng serve
 ### NodeJS Express backend
 
 ```
-node server.js
+nodemon server.js
 ```
 
 # Disclaimer:
